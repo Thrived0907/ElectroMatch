@@ -1,0 +1,25 @@
+import { Router } from "express";
+import products from "./products";
+import recommend from "./recommend";
+import compare from "./compare";
+import chat from "./chat";
+import wishlist from "./wishlist";
+import reviews from "./reviews";
+import alerts from "./alerts";
+import dashboard from "./dashboard";
+import search from "./search";
+import admin from "./admin";
+import webhooks from "./webhooks";
+
+export const routes = Router();
+routes.use("/products", products);
+routes.use("/recommend", recommend);
+routes.use("/compare", compare);
+routes.use("/chat", chat);
+routes.use("/wishlist", wishlist);
+routes.use("/reviews", reviews);
+routes.use("/alerts", alerts);
+routes.use("/dashboard", dashboard);
+routes.use("/search", search);
+routes.use("/admin", admin);
+routes.use("/webhooks", webhooks);

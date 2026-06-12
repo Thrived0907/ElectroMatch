@@ -1,0 +1,17 @@
+Docker service
+
+	docker compose up -d
+	docker ps
+Install dependencies (first time)
+	pnpm install
+Start backend
+	pnpm --filter @electromatch/api dev
+	
+	Expected:
+
+API listening
+port: 4000
+
+start frontened
+	
+	pnpm --filter @electromatch/web dev

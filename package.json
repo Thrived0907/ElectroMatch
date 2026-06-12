@@ -1,0 +1,14 @@
+{
+  "name": "electromatch-ai",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "pnpm --filter @electromatch/web dev",
+    "dev:api": "pnpm --filter @electromatch/api dev",
+    "build": "pnpm -r build"
+  }
+}
