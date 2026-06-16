@@ -1,15 +1,31 @@
 name: CI
-on: [push, pull_request]
+
+on:
+  push:
+  pull_request:
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: pnpm/action-setup@v3
-        with: { version: 9 }
+        with:
+          version: 9
+
       - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: pnpm }
+        with:
+          node-version: 20
+          cache: pnpm
+
       - run: pnpm install --frozen-lockfile
+
+      - run: cd apps/api && pnpm prisma generate
+
       - run: pnpm -r typecheck
+
       - run: pnpm -r lint
+
       - run: pnpm -r test
