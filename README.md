@@ -3,6 +3,16 @@
 AI-powered Electronics Recommendation Platform for the Indian market (₹).
 Helps users discover the best laptops, smartphones, tablets, smartwatches, headphones, monitors, keyboards, mice and more — based on budget, usage, and preferences.
 
+Features:
+- AI chat assistant (Groq LLM)
+- Product recommendations
+- Product comparison
+- Authentication (Clerk)
+- Wishlist
+- Search
+- Prisma + PostgreSQL
+- Next.js + Express monorepo
+
 ## Monorepo Layout
 
 ```
