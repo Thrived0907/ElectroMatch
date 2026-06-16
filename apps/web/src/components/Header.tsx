@@ -1,4 +1,11 @@
 import Link from "next/link";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+} from "@clerk/nextjs";
+
 export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
@@ -14,10 +21,14 @@ export function Header() {
           <Link href="/dashboard">Dashboard</Link>
         </nav>
 
-        <div>
-          <button className="border rounded px-3 py-1">
-            Guest Mode
-          </button>
+        <div className="flex items-center gap-3">
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+
+          <SignedIn>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
         </div>
       </div>
     </header>

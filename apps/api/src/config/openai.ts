@@ -1,3 +1,7 @@
-import OpenAI from "openai";
-export const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-export const MODEL = "gpt-4o-mini";
+import Groq from "groq-sdk";
+
+export const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
+
+export const MODEL = "llama-3.3-70b-versatile";

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 
 export default function ChatPage() {
+  console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
   const { getToken, isSignedIn } = useAuth();
   const [threadId, setThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);

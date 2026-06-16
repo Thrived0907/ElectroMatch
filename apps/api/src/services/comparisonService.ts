@@ -1,4 +1,4 @@
-import { openai, MODEL } from "../config/openai";
+import { groq, MODEL } from "../config/openai";
 import { productRepo } from "../repositories/productRepo";
 import { prisma } from "../config/prisma";
 
@@ -13,7 +13,7 @@ export const comparisonService = {
     }
 
     const sys =
-      'You are an electronics comparison expert. Compare these products and return JSON: {winnerOverall, bestValue, bestPerformance, bestBattery, bestCamera, bestDisplay, bestLongTerm, pros: {productId: [..]}, cons: {productId: [..]}, verdict: "1-paragraph summary"}.';
+      'You are an electronics comparison expert. Compare these products and return ONLY valid JSON with this shape: {"winnerOverall":"","bestValue":"","bestPerformance":"","bestBattery":"","bestCamera":"","bestDisplay":"","bestLongTerm":"","pros":{},"cons":{},"verdict":""}';
 
     const user = products
       .map(
@@ -24,18 +24,34 @@ export const comparisonService = {
       )
       .join("\n\n");
 
-    const resp = await openai.chat.completions.create({
+    const resp = await groq.chat.completions.create({
       model: MODEL,
-      response_format: { type: "json_object" },
+      temperature: 0.2,
       messages: [
-        { role: "system", content: sys },
-        { role: "user", content: user },
+        {
+          role: "system",
+          content: sys,
+        },
+        {
+          role: "user",
+          content: user,
+        },
       ],
     });
 
-    const ai = JSON.parse(
-      resp.choices[0]?.message?.content ?? "{}"
-    );
+    let ai: any = {};
+
+    try {
+      ai = JSON.parse(
+        resp.choices[0]?.message?.content ?? "{}"
+      );
+    } catch {
+      ai = {
+        verdict:
+          resp.choices[0]?.message?.content ??
+          "Comparison generated.",
+      };
+    }
 
     await prisma.comparison.create({
       data: {

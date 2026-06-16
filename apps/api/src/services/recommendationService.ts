@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { prisma } from "../config/prisma";
-import { openai, MODEL } from "../config/openai";
+import { groq, MODEL } from "../config/openai";
 import { redis } from "../config/redis";
 import { RecommendInput } from "@electromatch/shared";
 import type { Category, Product, Specification, Brand } from "@prisma/client";
@@ -145,7 +145,7 @@ export class RecommendationService {
     input: RecommendInput
   ): Promise<string[]> {
     const sys =
-      "You are an electronics buying advisor for Indian consumers. Give a 2-sentence explanation in plain English why each product fits the user. Mention 1 spec and 1 use-case. No fluff.";
+      "You are an electronics buying advisor for Indian consumers. Give a 2-sentence explanation in plain English why each product fits the user. Mention 1 spec and 1 use-case. Return ONLY valid JSON.";
 
     const productList = products
       .map(
@@ -166,16 +166,13 @@ prefs=${input.preferences.join(", ")}
 Products:
 ${productList}
 
-Return JSON:
-{"explanations":["...","..."]}
-in the same order.`;
+Return ONLY:
+{"explanations":["...","..."]}`;
 
     try {
-      const resp = await openai.chat.completions.create({
+      const resp = await groq.chat.completions.create({
         model: MODEL,
-        response_format: {
-          type: "json_object",
-        },
+        temperature: 0.3,
         messages: [
           {
             role: "system",
@@ -188,9 +185,10 @@ in the same order.`;
         ],
       });
 
-      const json = JSON.parse(
-        resp.choices[0]?.message?.content ?? "{}"
-      );
+      const content =
+        resp.choices[0]?.message?.content ?? "{}";
+
+      const json = JSON.parse(content);
 
       return (
         json.explanations ??
@@ -205,13 +203,11 @@ in the same order.`;
 
   async parseNlp(query: string) {
     const sys =
-      'Extract structured electronics shopping intent. Return JSON: {category, budgetMin, budgetMax, usage[], preferences[]}. Category one of LAPTOP,SMARTPHONE,TABLET,SMARTWATCH,HEADPHONES,MONITOR,KEYBOARD,MOUSE,OTHER. Budget in INR. If user says "under X", budgetMin=0 budgetMax=X.';
+      'Extract structured electronics shopping intent. Return ONLY JSON: {"category":"","budgetMin":0,"budgetMax":0,"usage":[],"preferences":[]}. Category must be one of LAPTOP,SMARTPHONE,TABLET,SMARTWATCH,HEADPHONES,MONITOR,KEYBOARD,MOUSE,OTHER. Budget in INR.';
 
-    const resp = await openai.chat.completions.create({
+    const resp = await groq.chat.completions.create({
       model: MODEL,
-      response_format: {
-        type: "json_object",
-      },
+      temperature: 0,
       messages: [
         {
           role: "system",
@@ -224,10 +220,12 @@ in the same order.`;
       ],
     });
 
-    return JSON.parse(
-      resp.choices[0]?.message?.content ?? "{}"
-    );
+    const content =
+      resp.choices[0]?.message?.content ?? "{}";
+
+    return JSON.parse(content);
   }
 }
 
-export const recommendationService = new RecommendationService();
+export const recommendationService =
+  new RecommendationService();
